@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .sidebar {
+      background-color: #343a40;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      width: 250px;
+      top: 0;
+      left: 0;
+      padding-top: 20px;
+      padding-left: 10px;
+      z-index: 10;
+    }
+
+    .sidebar h3 {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      color: white;
+    }
+
+    .sidebar .menu-item {
+      color: white;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .sidebar .menu-item:hover {
+      background-color: #495057;
+      text-decoration: none;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .dashboard-header {
+      color: #333;
+    }
+
+    .row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .country-column {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 20px;
+      z-index: 999;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .country-name {
+      padding: 10px;
+      background-color: #f8f9fa;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .country-name:hover {
+      background-color: #e2e6ea;
+    }
+
+    .selected-country {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .sms-products-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 10px;
+      align-items: stretch;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 20px;
+      z-index: 999;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .sms-product {
+      padding: 10px;
+      background-color: #f1f3f5;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .sms-product:hover {
+      transform: scale(1.02);
+      background-color: #e2e6ea;
+    }
+
+    .sms-product-name {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .sms-product-description {
+      color: #333;
+    }
+
+    .col-md-4, .col-md-8 {
+      flex: 1;
+    }
+
+    .center-button {
+      margin-bottom: 15px;
+    }
+
+    .main-content {
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .search-bar {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h3 class="text-center">Dashboard</h3>
+        <div class="username">
+          <p>Welcome, {{ username }}</p> <!-- Dynamic username -->
+        </div>
+        <a href="/dashboard" class="menu-item">Receive SMS</a>
+        <a href="/numrent" class="menu-item">Activate Number</a>
+        <!-- Logout Button -->
+        <a href="{% url 'logout' %}" class="menu-item" style="background-color: #dc3545; color: white;">Log Out</a>
+      </div>
+
+  <div class="main-content">
+    <div id="receiveSmsContent" class="container">
+      <h1 class="dashboard-header">Receive SMS</h1>
+      <p>
+        This is the Receive SMS section. Manage your received messages here.
+        For more information, visit 
+        <a href="https://example.com" target="_blank">our website</a>.
+      </p>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="d-flex justify-content-center center-button">
+            <button class="btn btn-primary">Country Button</button>
+          </div>
+
+          <input type="text" id="countrySearch" class="form-control search-bar" placeholder="Search Country" onkeyup="filterCountries()">
+          
+          <div class="country-column" id="countryList">
+            <!-- Place Nigeria first, followed by other countries -->
+            <div class="country-name selected-country" onclick="displayProducts('nigeria', 'Nigeria')" id="country-nigeria">
+              <strong>Nigeria</strong>
+            </div>
+            <!-- Loop through other countries -->
+            {% for country in country_names %}
+              {% if country != 'Nigeria' %}
+                <div class="country-name" onclick="displayProducts('{{ country|lower }}', '{{ country }}')" id="country-{{ country|lower }}">
+                  <strong>{{ country }}</strong>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="col-md-8">
+          <div class="d-flex justify-content-center center-button">
+            <button class="btn btn-primary">SMS Product Button</button>
+          </div>
+          <div id="countryMessage" class="product-column">
+            <p>Select a country to see the message.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sms-products-list">
+      <h3>Available SMS Products</h3>
+      {% for product in sms_products %}
+        <div class="sms-product" onclick="showProductDetails(event, '{{ product.name }}', '{{ product.description }}')">
+          <div class="sms-product-name">{{ product.name }}</div>
+          <div class="sms-product-description">{{ product.description }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="product-name"></p>
+          <p id="product-description"></p>
+          <p id="country-name"></p>
+          <div id="additional-info"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function filterCountries() {
+      const searchQuery = document.getElementById('countrySearch').value.toLowerCase();
+      const countryList = document.getElementById('countryList');
+      const countries = countryList.getElementsByClassName('country-name');
+      
+      for (let i = 0; i < countries.length; i++) {
+        const countryName = countries[i].textContent || countries[i].innerText;
+        if (countryName.toLowerCase().includes(searchQuery)) {
+          countries[i].style.display = "";
+        } else {
+          countries[i].style.display = "none";
+        }
+      }
+    }
+
+    function displayProducts(countrySlug, countryName) {
+      const countryMessageDiv = document.getElementById('countryMessage');
+      countryMessageDiv.innerHTML = "<p>Loading...</p>";
+  
+      const countries = document.getElementsByClassName('country-name');
+      for (let i = 0; i < countries.length; i++) {
+        countries[i].classList.remove('selected-country');
+      }
+      document.getElementById('country-' + countrySlug).classList.add('selected-country');
+      document.getElementById('country-' + countrySlug).scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      fetch(`/get-products?country=${countrySlug}`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) {
+                  countryMessageDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                  return;
+              }
+  
+              let productHtml = `<div class="sms-products-list">`;
+              for (const productCode in data) {
+                  const details = data[productCode];
+                  productHtml += `
+                      <div class="sms-product" onclick="showProductDetails('${countrySlug}', '${productCode}')">
+                          <div class="sms-product-name">${productCode}</div>
+                          <div class="sms-product-description">Category: ${details.Category}, Available: ${details.Qty}, Price: $${details.Price}</div>
+                      </div>`;
+              }
+              productHtml += `</div>`;
+              countryMessageDiv.innerHTML = productHtml;
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              countryMessageDiv.innerHTML = "<p>Error loading product data.</p>";
+          });
+    }
+
+    window.onload = function() {
+      const nigeriaCountrySlug = 'nigeria';
+      const nigeriaCountryName = 'Nigeria';
+      displayProducts(nigeriaCountrySlug, nigeriaCountryName);
+    };
+
+    function showProductDetails(countrySlug, productCode) {
+      const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+  
+      fetch(`/get-product-details?country=${countrySlug}&product=${productCode}`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) {
+                  alert(`Error: ${data.error}`);
+                  return;
+              }
+
+              document.getElementById('product-name').innerText = `Product: ${productCode}`;
+              document.getElementById('product-description').innerText = `Description: ${data.product}`;
+              document.getElementById('country-name').innerText = `Country: ${data.country}`;
+              document.getElementById('additional-info').innerHTML = `
+                  <p>Price: $${data.price}</p>
+                  <p>Status: ${data.status}</p>
+                  <p>Expires: ${data.expires}</p>
+                  <p>Phone Number: ${data.phone}</p>
+                  <p>Operator: ${data.operator}</p>
+              `;
+              productModal.show();
+          })
+          .catch(error => {
+              console.error('Error fetching product details:', error);
+              alert('Failed to fetch product details. Please try again later.');
+          });
+    }
+  </script>
+
+</body>
+</html>

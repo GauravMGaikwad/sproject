@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Renting Service</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        
+
+        .sms-message {
+            margin-bottom: 15px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sms-message:hover {
+            transform: translateY(-5px); /* Hover effect to lift the card */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .sms-message .sms-container {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .sms-message .sms-container img {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .sms-message .company-name {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #007bff;
+        }
+
+        .sms-text {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .sms-container .company-name {
+            margin-bottom: 5px;
+        }
+
+        /* Animation for the sliding in effect */
+        .slide-in {
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hide removed message */
+        .removed {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        /* Layout for the logo on the left and SMS content on the right */
+        .sms-layout {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sms-layout .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .sms-layout .sms-content {
+            flex-grow: 1;
+        }
+
+        /* Styling for the title and description */
+        .heading-container {
+            text-align: left;
+            max-width: 600px; /* Restrict the width for better readability */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%; /* Full height to vertically align content */
+        }
+
+        .heading-container h3 {
+            font-size: 2rem;
+            color: #007bff;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .heading-container p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .cta-button {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Increase width of SMS container section */
+        .sms-section {
+            width: 100%;
+            max-width: 800px; /* Increase width for SMS content */
+        }
+
+        /* Flexbox layout for two columns with 65% and 35% width */
+        .columns {
+            display: flex;
+            width: 100%;
+        }
+
+        .columns .left-column {
+            width: 65%;
+            padding-right: 20px;
+        }
+
+        .columns .right-column {
+            width: 35%;
+        }
+
+        html, body {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+      }
+      
+      .new-section {
+          padding: 50px 0;
+          background-color: #f9f9f9;
+          background-image: url('https://ji5fq6u01z.a.trbcdn.net/_nuxt/bg_main.JFAbpAr_.svg');
+          background-size: contain; /* Prevent stretching, image fits within the section */
+          background-position: center right; /* Position image centered horizontally and aligned to the right vertically */
+          background-repeat: no-repeat;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh; /* Full viewport height */
+          width: 100%; /* Make section full width */
+          border: 2px solid red; /* Optional: Border for visual confirmation */
+      }
+
+
+      .content-box {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-box h2 {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .content-box p {
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    .content-box .btn-custom {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .content-box .btn-custom:hover {
+        background-color: #0056b3;
+    }
+
+    footer {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 20px;
+        position: relative;
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar (Optional) -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">SMS Service</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://meet.google.com/rpm-dmqo-zgv">Lets discuss</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register/">Register</a>
+                </li>
+                
+            </ul>
+            
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="container">
+        <div class="new-section">
+            <!-- New Section with Heading, Description, and Button -->
+            <div class="columns">
+                <div class="left-column">
+                    <div class="heading-container">
+                        <h3>Receive SMS online <br> to virtual phone number</h3>
+                        
+                        <p>For private registration on various sites, services and apps</p>
+                        <button class="cta-button">Get Access</button>
+                    </div>
+                </div>
+
+                <!-- SMS Messages Section -->
+                <div class="right-column sms-section">
+                    <h3>Recent SMS Messages</h3>
+                    <div id="smsContainer">
+                        <!-- Initial 4 SMS Messages will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+      <div class="row">
+          <!-- First Column -->
+          <div class="col-md-6">
+              <div class="content-box">
+                  <h2>One-time receiving messages to the number in 112 countries</h2>
+                  <p><strong>From one site</strong></p>
+                  <p><strong>From $0.01 for the site</strong></p>
+                  <p><strong>Time for receiving SMS:</strong> Up to 20 minutes</p>
+                  <p><strong>Number prolongation:</strong> Not available</p>
+                  <p><strong>You can receive SMS:</strong> Only from one site/application selected when ordering</p>
+                  <p><strong>Countries:</strong> 112 <a href="#">show list</a></p>
+                  <p><strong>Numbers:</strong> Over 10 million numbers</p>
+                  <p><strong>Numbers rent in:</strong> 56 countries</p>
+                  <p><strong>To receive SMS from any sites:</strong> From $3 per day</p>
+                  <p><strong>Rent term:</strong> Unlimited (from 1 day)</p>
+                  <p><strong>Number prolongation:</strong> Available</p>
+                  <p><strong>You can receive SMS:</strong> From any legitimate sites and applications, no limits</p>
+                  <p><strong>Countries:</strong> 56 <a href="#">show list</a></p>
+                  <p><strong>Numbers:</strong> 2458</p>
+                  <a href="{% url 'register' %}" class="btn-custom">Order</a>
+              </div>
+          </div>
+  
+          <!-- Second Column -->
+          <div class="col-md-6">
+              <div class="content-box">
+                  <h2>One-time receiving messages to the number in 112 countries</h2>
+                  <p><strong>From one site</strong></p>
+                  <p><strong>From $0.01 for the site</strong></p>
+                  <p><strong>Time for receiving SMS:</strong> Up to 20 minutes</p>
+                  <p><strong>Number prolongation:</strong> Not available</p>
+                  <p><strong>You can receive SMS:</strong> Only from one site/application selected when ordering</p>
+                  <p><strong>Countries:</strong> 112 <a href="#">show list</a></p>
+                  <p><strong>Numbers:</strong> Over 10 million numbers</p>
+                  <p><strong>Numbers rent in:</strong> 56 countries</p>
+                  <p><strong>To receive SMS from any sites:</strong> From $3 per day</p>
+                  <p><strong>Rent term:</strong> Unlimited (from 1 day)</p>
+                  <p><strong>Number prolongation:</strong> Available</p>
+                  <p><strong>You can receive SMS:</strong> From any legitimate sites and applications, no limits</p>
+                  <p><strong>Countries:</strong> 56 <a href="#">show list</a></p>
+                  <p><strong>Numbers:</strong> 2458</p>
+                  <a href="{% url 'register' %}" class="btn-custom">Order</a>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+
+    <!-- Footer (Optional) -->
+    <footer class="bg-light text-center py-4">
+        <p>&copy; 2024 SMS Renting Service. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        const smsData = [
+            {
+                company: 'Steam',
+                code: 'Use code 26236 to confirm your phone on Steam',
+                logo: 'https://img.icons8.com/color/48/000000/steam.png'
+            },
+            {
+                company: 'Taobao',
+                code: 'Verification Code: 561318. Valid for 5 minutes',
+                logo: 'https://img.icons8.com/color/48/000000/taobao.png'
+            },
+            {
+                company: 'eBay',
+                code: 'Your one-time eBay PIN is 8905',
+                logo: 'https://img.icons8.com/color/48/000000/ebay.png'
+            },
+            {
+                company: 'Facebook',
+                code: 'Use 645 829 to verify your Facebook account',
+                logo: 'https://img.icons8.com/color/48/000000/facebook.png'
+            },
+            {
+                company: 'Google',
+                code: 'G-585019 is your Google verification code',
+                logo: 'https://img.icons8.com/color/48/000000/google-logo.png'
+            },
+            {
+                company: 'WhatsApp',
+                code: 'Code for: 211-326',
+                logo: 'https://img.icons8.com/color/48/000000/whatsapp.png'
+            },
+            {
+                company: 'Amazon',
+                code: 'Your Amazon Web Services (AWS) verification code is: 8732',
+                logo: 'https://img.icons8.com/color/48/000000/amazon.png'
+            },
+            {
+                company: 'Instagram',
+                code: 'Use 645 829 to verify your Instagram account.',
+                logo: 'https://img.icons8.com/color/48/000000/instagram-new.png'
+            },
+            {
+                company: 'AliExpress',
+                code: 'Verification Code: 561318. Valid for 5 minutes.',
+                logo: 'https://img.icons8.com/color/48/000000/aliexpress.png'
+            },
+            {
+                company: 'LINE',
+                code: 'Please enter 493425 into LINE within the next 30 mins.',
+                logo: 'https://img.icons8.com/color/48/000000/line.png'
+            }
+        ];
+
+        let smsIndex = 0;
+        const smsContainer = document.getElementById("smsContainer");
+
+        // Initialize with the first 4 messages
+        function initializeSms() {
+            for (let i = 0; i < 4; i++) {
+                addSms();
+            }
+        }
+
+        function addSms() {
+            // Check if there are 4 SMS messages already
+            if (smsContainer.children.length >= 4) {
+                // Remove the first SMS message (the oldest one)
+                smsContainer.removeChild(smsContainer.children[0]);
+            }
+
+            // Add new SMS message
+            const sms = smsData[smsIndex];
+            const smsElement = document.createElement("div");
+            smsElement.classList.add("sms-message", "slide-in");
+
+            smsElement.innerHTML = `
+                <div class="sms-layout">
+                    <div class="logo-container">
+                        <img src="${sms.logo}" alt="${sms.company} Logo">
+                    </div>
+                    <div class="sms-content">
+                        <div class="company-name">${sms.company}</div>
+                        <div class="sms-text">${sms.code}</div>
+                    </div>
+                </div>
+            `;
+
+            smsContainer.appendChild(smsElement);
+
+            // Move to the next SMS in the array, loop if necessary
+            smsIndex = (smsIndex + 1) % smsData.length;
+        }
+
+        // Start adding SMS messages every 2 seconds
+        setInterval(addSms, 2000);
+
+        // Initialize the first 4 SMS when the page loads
+        window.onload = initializeSms;
+    </script>
+</body>
+
+</html>
